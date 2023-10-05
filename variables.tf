@@ -1,0 +1,115 @@
+variable "kubeconfig" {
+  description = "Kubeconfig path"
+  type        = string
+  default     = "~/.kube/config"
+}
+#install variables
+
+variable "redis_ha_enabled" {
+  description = "Whether Redis-HA is enabled"
+  type        = bool
+  default     = false
+}
+
+variable "controller_replicas" {
+  description = "Number of controller replicas"
+  type        = number
+  default     = 1
+}
+
+variable "server_replicas" {
+  description = "Number of server replicas"
+  type        = number
+  default     = 1
+}
+
+variable "server_service_type" {
+  description = "Type of service for the server"
+  type        = string
+  default     = "LoadBalancer"
+}
+
+variable "repo_server_replicas" {
+  description = "Number of repoServer replicas"
+  type        = number
+  default     = 1
+}
+
+variable "application_set_replica_count" {
+  description = "Replica count for the applicationSet"
+  type        = number
+  default     = 1
+}
+
+#APP variables
+
+variable "app_name" {
+  description = "Name of the application"
+  type        = string
+  default     = "argocd-app"
+}
+
+variable "argo_app_namespace" {
+  description = "Namespace for the argo application"
+  type        = string
+  default     = "argocd"
+}
+
+variable "project_name" {
+  description = "Name of the ArgoCD project"
+  type        = string
+  default     = "default"
+}
+
+variable "project_repoURL" {
+  description = "Repository URL for the application"
+  type        = string
+  default     = "git@github.com:bartaadalbert/kbot.git"
+}
+
+variable "project_targetRevision" {
+  description = "Target revision for the application"
+  type        = string
+  default     = "HEAD"
+}
+
+variable "project_path" {
+  description = "Path to the application within the repository"
+  type        = string
+  default     = "helm"
+}
+variable "project_recurse" {
+  description = "recurse,"
+  type        = bool
+  default     = true
+}
+
+variable "destination_server" {
+  description = "ArgoCD destination server"
+  type        = string
+  default     = "default"
+}
+
+variable "destination_namespace" {
+  description = "Namespace on the destination cluster"
+  type        = string
+  default     = "default"
+}
+
+variable "sync_create_namespace" {
+  description = "Create by default the namespace if not exist"
+  type        = bool
+  default     = true
+}
+
+variable "sync_prune" {
+  description = "tells ArgoCD to remove (prune) any resources that exist in the cluster but are not defined in your application's YAML"
+  type        = bool
+  default     = true
+}
+
+variable "sync_selfHeal" {
+  description = "ArgoCD will automatically attempt to repair any resources that are not in the desired state,"
+  type        = bool
+  default     = true
+}
