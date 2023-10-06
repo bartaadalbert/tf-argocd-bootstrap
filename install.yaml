@@ -1,0 +1,16 @@
+redis-ha:
+    enabled: ${var.redis_ha_enabled}
+
+controller:
+  replicas: ${var.controller_replicas}
+
+server:
+  replicas: ${var.server_replicas}
+  service:
+    type: ${var.server_service_type}
+
+repoServer:
+  replicas: ${var.repo_server_replicas}
+
+applicationSet:
+  replicaCount: ${var.application_set_replica_count}
