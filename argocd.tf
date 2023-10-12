@@ -56,11 +56,13 @@ metadata:
   namespace: ${var.argo_app_namespace}
   labels:
     argocd.argoproj.io/secret-type: repository
-data:
+stringData:
   type: git
   url: git@github.com:${var.github_repository}
   sshPrivateKey: |
-    ${var.private_key}
+    ${indent(4, var.private_key)}
+  insecure: "true"
+  enableLfs: "false"
 YAML
 }
 
