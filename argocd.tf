@@ -48,7 +48,7 @@ resource "null_resource" "patch_argocd_server" {
 
 # (5) Add private repo
 resource "kubectl_manifest" "private_repo_secret" {
-  yaml_body = var.byfile_create ? file("${path.module}/secret.yaml") : <<-YAML
+  yaml_body = var.byfile_create && fileexists("${path.module}/secret.yaml") ? file("${path.module}/secret.yaml") : <<-YAML
 apiVersion: v1
 kind: Secret
 metadata:
@@ -69,7 +69,7 @@ YAML
 #(6) Add app to argocd
 resource "kubectl_manifest" "argocdApp" {
   depends_on = [kubectl_manifest.private_repo_secret]
-    yaml_body = var.byfile_create ? file("${path.module}/app.yaml") : <<YAML
+    yaml_body = var.byfile_create && fileexists("${path.module}/app.yaml") ? file("${path.module}/app.yaml") : <<-YAML
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
