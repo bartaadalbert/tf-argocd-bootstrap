@@ -35,10 +35,30 @@ The key resources in this project include:
         destination_namespace   = var.destination_namespace
         project_path            = var.project_path
         project_targetRevision  = var.project_targetRevision
+        patch_argocd_password   = var.patch_argocd_password
+        admin_password          = var.admin_password
 
     }
   ```
 To customize these resources or adjust any other settings, refer to the argocd.tf file.
+
+## Adjusting ArgoCD Password
+This configuration allows you to set an initial password for ArgoCD. By default, the password is set to adm!nArgocd. To customize the password:
+
+    Generate a bcrypt hash of your desired password using an online bcrypt hash generator or a command-line tool.
+    Use the hashed password within the Terraform configuration to apply as described in the "Getting Started" section.
+
+Example using bcrypt and jq to patch the password:
+
+```bash
+  PASSWORD_HASH=$(echo -n 'YourPassword' | bcrypt)
+kubectl -n argocd patch secret argocd-secret \
+  -p '{"stringData": {
+    "admin.password": "'${PASSWORD_HASH}'",
+    "admin.passwordMtime": "'$(date +%FT%T%Z)'"
+  }}'
+```
+Note: Replace 'YourPassword' with the desired password. Ensure to keep your passwords secure and follow security best practices.
 
 ## Cleanup
 
@@ -53,6 +73,8 @@ Below are descriptions of the variables in the variables.tf file:
     argo_app_namespace: Namespace for the ArgoCD application.
     secret_name: The name of the Secret.
     ssh_private_key: The SSH private key for Git access.
+    admin_password : The admin password in bcrypted form
+    patch_argocd_password : default false
 
 ## Helm Release Variables
 

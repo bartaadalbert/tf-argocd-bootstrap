@@ -47,6 +47,18 @@ variable "application_set_replica_count" {
   default     = 1
 }
 
+variable "patch_argocd_password" {
+  description = "Whether to patch the ArgoCD admin password"
+  type        = bool
+  default     = false
+}
+
+variable "admin_password" {
+  description = "ArgoCD admin password hash, pass = adm!nArgocd"
+  type        = string
+  default     = "$2a$12$5iyxQNgijH8CH9/6nh35Qus/GpE/vN1NXGEuHOWAsE0ijrhhiRhmG/n6"
+}
+
 #APP variables
 
 variable "app_name" {

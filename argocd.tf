@@ -119,4 +119,20 @@ spec:
 YAML
 }
 
+#(8) Patch the ArgoCD password
+resource "null_resource" "patch_argocd_password" {
+  count = var.patch_argocd_password ? 1 : 0
+  
+  provisioner "local-exec" {
+    command = <<-EOF
+      kubectl -n argocd patch secret argocd-secret -p \
+        '{"stringData": {
+          "admin.password": "${var.admin_password}",
+          "admin.passwordMtime": "$(date +%FT%T%Z)"
+        }}'
+    EOF
+  }
+
+  depends_on = [helm_release.argocd]
+}
 
