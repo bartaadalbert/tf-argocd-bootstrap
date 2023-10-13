@@ -45,9 +45,23 @@ resource "null_resource" "patch_argocd_server" {
   }
 }
 
+# (5) Argo namespace check
+resource "null_resource" "namespace_check" {
+  depends_on = [helm_release.argocd]
 
-# (5) Add private repo
+  provisioner "local-exec" {
+    command = <<-EOH
+      until kubectl get namespace ${var.argo_app_namespace}; do 
+        echo -e "\033[33mWaiting for namespace ${var.argo_app_namespace}...\033[0m"
+        sleep 1 
+      done
+    EOH
+  }
+}
+
+# (6) Add private repo
 resource "kubectl_manifest" "private_repo_secret" {
+  depends_on = [null_resource.namespace_check]
   yaml_body = var.byfile_create && fileexists("${path.module}/secret.yaml") ? file("${path.module}/secret.yaml") : <<-YAML
 apiVersion: v1
 kind: Secret
@@ -66,14 +80,25 @@ stringData:
 YAML
 }
 
-#(6) Add app to argocd
+#(7) App destibation ns create
+resource "kubectl_manifest" "destination_namespace" {
+  yaml_body = <<-YAML
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${var.destination_namespace}
+YAML
+}
+
+#(8) Add app to argocd
 resource "kubectl_manifest" "argocdApp" {
-  depends_on = [kubectl_manifest.private_repo_secret]
+  depends_on = [kubectl_manifest.private_repo_secret, kubectl_manifest.destination_namespace]
     yaml_body = var.byfile_create && fileexists("${path.module}/app.yaml") ? file("${path.module}/app.yaml") : <<-YAML
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: ${var.app_name}
+  namespace: ${var.argo_app_namespace}
 spec:
   destination:
     name: ''
