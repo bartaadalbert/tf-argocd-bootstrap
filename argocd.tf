@@ -119,7 +119,7 @@ spec:
 YAML
 }
 
-#(8) Patch the ArgoCD password
+#(9) Patch the ArgoCD password
 resource "null_resource" "patch_argocd_password" {
   count = var.patch_argocd_password ? 1 : 0
   
@@ -135,4 +135,53 @@ resource "null_resource" "patch_argocd_password" {
 
   depends_on = [helm_release.argocd]
 }
+
+# (10) Patch ArgoCD ports
+resource "null_resource" "patch_argocd_ports" {
+  count = var.patch_ports ? 1 : 0
+
+  depends_on = [helm_release.argocd]
+
+  triggers = {
+    timestamp = "${timestamp()}"
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      kubectl -n ${var.argo_app_namespace} patch svc argocd-server --type='json' -p='[{"op": "replace", "path": "/spec/ports/0/port", "value":${var.http_argo_port}},{"op": "replace", "path": "/spec/ports/1/port", "value":${var.https_argo_port}}]'
+    EOT
+  }
+}
+
+# (11) Cert manager in ArgoCD
+resource "kubectl_manifest" "cert_manager_app" {
+  count = var.install_cert_manager ? 1 : 0
+
+  yaml_body = <<-YAML
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager
+  namespace: ${var.argo_app_namespace}
+spec:
+  destination:
+    namespace: ${var.namespace_cert_manager}
+    server: ${var.destination_server}
+  project: ${var.project_name}
+  source:
+    chart: cert-manager
+    helm:
+      parameters:
+        - name: installCRDs
+          value: "true"
+    repoURL: https://charts.jetstack.io
+    targetRevision: ${var.cert_manager_version}
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true
+  YAML
+}
+
+
 

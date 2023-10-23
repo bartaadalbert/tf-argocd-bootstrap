@@ -101,6 +101,52 @@ These variables control the Helm release for ArgoCD:
     sync_prune: Prune resources (boolean).
     sync_selfHeal: Attempt to repair resources (boolean).
 
+### New Features
+
+1. **Patching ArgoCD Ports**:
+   By default, ArgoCD uses ports 80 and 443. If you wish to change them, you can use the `patch_ports` option to switch the ports to 88 for HTTP and 8443 for HTTPS.
+
+   ```hcl
+   variable "http_argo_port" {
+     description = "Port to patch for HTTP access to ArgoCD"
+     default     = 88
+   }
+
+   variable "https_argo_port" {
+     description = "Port to patch for HTTPS access to ArgoCD"
+     default     = 8443
+   }
+
+   variable "patch_ports" {
+     description = "Whether to patch the ArgoCD ports from 80 and 443 to 88 and 8443"
+     default     = false
+   }
+   ```
+
+   To enable this feature, set the `patch_ports` variable to `true`.
+
+2. **Installing Cert Manager with ArgoCD**:
+   If you wish to manage certificates within your cluster, you can install the cert-manager using ArgoCD. 
+
+   ```hcl
+   variable "install_cert_manager" {
+     description = "Whether to install cert-manager using ArgoCD"
+     default     = false
+   }
+
+   variable "namespace_cert_manager" {
+     description = "Namespace for the Cert Manager"
+     default     = "cert-manager"
+   }
+
+   variable "cert_manager_version" {
+     description = "Version for the Cert Manager"
+     default     = "v1.13.1"
+   }
+   ```
+
+   To install cert-manager, set the `install_cert_manager` variable to `true`.
+
 ## Contributions
 
 Contributions are welcome! If you encounter any issues or have ideas for improvements, feel free to open an issue or submit a pull request.

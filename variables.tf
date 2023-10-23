@@ -59,6 +59,47 @@ variable "admin_password" {
   default     = "$2a$12$5iyxQNgijH8CH9/6nh35Qus/GpE/vN1NXGEuHOWAsE0ijrhhiRhmG/n6"
 }
 
+variable "http_argo_port" {
+  description = "Port to patch for HTTP access to ArgoCD"
+  type        = number
+  default     = 88
+}
+
+variable "https_argo_port" {
+  description = "Port to patch for HTTPS access to ArgoCD"
+  type        = number
+  default     = 8443
+}
+
+variable "patch_ports" {
+  description = "Whether to patch the ArgoCD ports from 80 and 443 to 88 and 8443"
+  type        = bool
+  default     = true
+}
+
+#Cert manager
+
+variable "install_cert_manager" {
+  description = "Whether to install cert-manager using ArgoCD"
+  type        = bool
+  default     = true
+}
+
+variable "namespace_cert_manager" {
+  description = "Namespace for the Cert Manager"
+  type        = string
+  default     = "cert-manager"
+}
+
+variable "cert_manager_version" {
+  description = "Version for the Cert Manager"
+  type        = string
+  default     = "v1.13.1"
+}
+
+
+#END CERT MANGER
+
 #APP variables
 
 variable "app_name" {
