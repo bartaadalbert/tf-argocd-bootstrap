@@ -194,5 +194,37 @@ spec:
   YAML
 }
 
+# (13) Patching the ConfigMap ArgoCD
+resource "null_resource" "patch_argocd_config" {
+  depends_on = [helm_release.argocd]
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      kubectl patch configmap argocd-cmd-params-cm -n ${var.argo_app_namespace} --type=merge -p '{"data": {"server.insecure": "true"}}'
+    EOT
+  }
+
+  triggers = {
+    patch_trigger = var.disable_argo_ssl ? "true" : "false"
+  }
+}
+
+# (14) Restarting the ArgoCD Deployment
+resource "null_resource" "restart_argocd_server" {
+  depends_on = [helm_release.argocd, null_resource.patch_argocd_config]
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      kubectl rollout restart deployment argocd-server -n ${var.argo_app_namespace}
+    EOT
+  }
+
+  triggers = {
+    restart_trigger = null_resource.patch_argocd_config.id
+  }
+}
+
+
+
 
 

@@ -74,6 +74,12 @@ variable "https_argo_port" {
 variable "patch_ports" {
   description = "Whether to patch the ArgoCD ports from 80 and 443 to 88 and 8443"
   type        = bool
+  default     = false
+}
+
+variable "disable_argo_ssl" {
+  description = "Whether to patch the ArgoCD secure or insecure"
+  type        = bool
   default     = true
 }
 
@@ -82,7 +88,7 @@ variable "patch_ports" {
 variable "install_cert_manager" {
   description = "Whether to install cert-manager using ArgoCD"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "namespace_cert_manager" {
