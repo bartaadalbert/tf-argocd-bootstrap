@@ -153,8 +153,19 @@ resource "null_resource" "patch_argocd_ports" {
   }
 }
 
-# (11) Cert manager in ArgoCD
+#(11) CERT destibation ns create
+resource "kubectl_manifest" "cert_destination_namespace" {
+  yaml_body = <<-YAML
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${var.namespace_cert_manager}
+YAML
+}
+
+# (12) Cert manager in ArgoCD
 resource "kubectl_manifest" "cert_manager_app" {
+  depends_on = [kubectl_manifest.private_repo_secret, kubectl_manifest.cert_destination_namespace]
   count = var.install_cert_manager ? 1 : 0
 
   yaml_body = <<-YAML
