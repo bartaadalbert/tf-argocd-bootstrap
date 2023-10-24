@@ -119,10 +119,10 @@ variable "acme_solvers" {
   description = "ACME solvers in string format"
   type        = string
   default     = <<-EOT
-    - http01:
-        ingress:
-          class: traefik
-  EOT
+- http01:
+    ingress:
+      class: traefik
+EOT
 }
 
 variable "namespace_cert_manager" {
