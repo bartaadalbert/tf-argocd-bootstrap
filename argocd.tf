@@ -224,9 +224,25 @@ resource "null_resource" "restart_argocd_server" {
   }
 }
 
+# (15) Webhook cert-manager
+resource "null_resource" "cert_manager_webhook_check" {
+  provisioner "local-exec" {
+    command = <<-EOT
+      until kubectl get pods -n cert-manager | grep cert-manager-webhook | grep '1/1'; do 
+        echo "Waiting for cert-manager-webhook to be ready..."
+        sleep 10 
+      done
+    EOT
+  }
+
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+}
+
 # (15) Create ClusterIssuer for cert-manager
 resource "kubectl_manifest" "cert_manager_cluster_issuer" {
-  depends_on = [kubectl_manifest.cert_manager_app]
+  depends_on = [kubectl_manifest.cert_manager_app, null_resource.cert_manager_webhook_check]
   count = var.install_cert_manager && var.create_cluster_issuer ? 1 : 0
 
   yaml_body = <<-YAML
