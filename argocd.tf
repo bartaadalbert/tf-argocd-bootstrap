@@ -245,3 +245,10 @@ ${indent(4, var.acme_solvers)} # Indent the solvers content by 4 spaces
 YAML
 }
 
+# (16) save cert issuer
+resource "local_file" "cert_manager_cluster_issuer_output" {
+  depends_on = [kubectl_manifest.cert_manager_cluster_issuer]
+  content  = kubectl_manifest.cert_manager_cluster_issuer[0].yaml_body
+  filename = "${path.module}/cert_manager_cluster_issuer_output.yaml"
+}
+
