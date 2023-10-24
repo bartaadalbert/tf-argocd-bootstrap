@@ -241,7 +241,7 @@ spec:
     privateKeySecretRef:
       name: ${var.acme_secret_ref}
     solvers:
-${indent(4, var.acme_solvers)} # Indent the solvers content by 4 spaces
+    ${indent(4, var.acme_solvers)} # Indent the solvers content by 4 spaces
 YAML
 }
 
