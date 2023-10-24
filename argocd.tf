@@ -248,7 +248,8 @@ YAML
 # (16) save cert issuer
 resource "local_file" "cert_manager_cluster_issuer_output" {
   depends_on = [kubectl_manifest.cert_manager_cluster_issuer]
-  content  = kubectl_manifest.cert_manager_cluster_issuer[0].yaml_body
+  count = var.install_cert_manager && var.create_cluster_issuer ? 1 : 0
+  content  = kubectl_manifest.cert_manager_cluster_issuer[count.index].yaml_body
   filename = "${path.module}/cert_manager_cluster_issuer_output.yaml"
 }
 
