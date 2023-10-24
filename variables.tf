@@ -91,6 +91,40 @@ variable "install_cert_manager" {
   default     = false
 }
 
+variable "create_cluster_issuer" {
+  description = "Whether to create the ClusterIssuer for cert-manager"
+  type        = bool
+  default     = false
+}
+
+variable "acme_secret_ref" {
+  description = "Acme SecretRef"
+  type        = string
+  default     = "letsencrypt-prod"
+}
+
+variable "acme_email" {
+  description = "Email address used for ACME registration"
+  type        = string
+  default     = "admin@example.com"
+}
+
+variable "acme_server" {
+  description = "ACME server URL"
+  type        = string
+  default     = "https://acme-v02.api.letsencrypt.org/directory"
+}
+
+variable "acme_solvers" {
+  description = "ACME solvers in string format"
+  type        = string
+  default     = <<-EOT
+    - http01:
+        ingress:
+          class: traefik
+  EOT
+}
+
 variable "namespace_cert_manager" {
   description = "Namespace for the Cert Manager"
   type        = string

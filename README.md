@@ -147,6 +147,38 @@ These variables control the Helm release for ArgoCD:
 
    To install cert-manager, set the `install_cert_manager` variable to `true`.
 
+## Creates a ClusterIssuer for Cert-manager with the provided ACME solvers
+
+## Configuration
+
+The following variables can be configured for the module:
+
+| Variable              | Description                                                | Default Value                                      |
+|-----------------------|------------------------------------------------------------|----------------------------------------------------|
+| `create_cluster_issuer` | Whether to create the `ClusterIssuer` for cert-manager   | `false`                                            |
+| `acme_secret_ref`      | The name of the secret reference for ACME                 | `letsencrypt-prod`                                 |
+| `acme_email`           | Email address used for ACME registration                  | `admin@example.com`                                |
+| `acme_server`          | ACME server URL                                           | `https://acme-v02.api.letsencrypt.org/directory`  |
+| `acme_solvers`         | ACME solvers in string format. Adjust as per requirements | `- http01:`<br>`    ingress:`<br>`      class: traefik` |
+
+---
+
+```hcl
+module "argocd_cert_manager" {
+  source                 = "github.com/bartaadalbert/tf-argocd-bootstrap?ref=master"
+  create_cluster_issuer  = true
+  acme_secret_ref        = "my-secret-ref"
+  acme_email             = "my-email@example.com"
+  acme_server            = "https://my-acme-server/directory"
+  acme_solvers           = <<-EOT
+    - http01:
+        ingress:
+          class: nginx
+    EOT
+}
+
+```
+
 ## Contributions
 
 Contributions are welcome! If you encounter any issues or have ideas for improvements, feel free to open an issue or submit a pull request.

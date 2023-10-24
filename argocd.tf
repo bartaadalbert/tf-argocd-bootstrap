@@ -224,7 +224,24 @@ resource "null_resource" "restart_argocd_server" {
   }
 }
 
+# (15) Create ClusterIssuer for cert-manager
+resource "kubectl_manifest" "cert_manager_cluster_issuer" {
+  depends_on = [kubectl_manifest.cert_manager_app]
+  count = var.install_cert_manager && var.create_cluster_issuer ? 1 : 0
 
-
-
+  yaml_body = <<-YAML
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: ${var.acme_secret_ref}
+spec:
+  acme:
+    email: ${var.acme_email}
+    server: ${var.acme_server}
+    privateKeySecretRef:
+      name: ${var.acme_secret_ref}
+    solvers:
+${indent(4, var.acme_solvers)} # Indent the solvers content by 4 spaces
+YAML
+}
 
